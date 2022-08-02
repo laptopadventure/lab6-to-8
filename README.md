@@ -1,5 +1,9 @@
 # js401n21lab1
 
+## Deployment
+
+https://lab6to8ht.herokuapp.com/
+
 ## Lab 6 Authentication
 
 For Lab 6, I had to implement a way for users to create their account, sign in to it, and use it to access unauthorized routes.
