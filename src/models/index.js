@@ -1,9 +1,16 @@
 'use strict';
 
 require('dotenv').config();
-const DATABASE_URL = ['dev', 'test'].includes(process.env.NODE_ENV)
-  ? 'sqlite::memory:'
-  : process.env.DATABASE_URL;
+
+let DATABASE_URL;
+if (['dev', 'test'].includes(process.env.NODE_ENV)) {
+  DATABASE_URL = 'sqlite::memory:';
+} else {
+  DATABASE_URL = process.env.DATABASE_URL || 'sqlite::memory:';
+}
+
+console.log('starting on ', DATABASE_URL);
+
 const { Sequelize, DataTypes } = require('sequelize');
 
 const Collection = require('./data-collection.js');
