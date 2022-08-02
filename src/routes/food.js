@@ -4,7 +4,7 @@ const express = require('express');
 
 const FoodCollection = require('../models/index.js').Food;
 
-// const app = express();
+const resolveToken = require('../middleware/resolveToken');
 
 const router = express.Router();
 
@@ -13,7 +13,7 @@ router.get('/food', getFood);
 router.get('/food/:id', getOneFood);
 router.post('/food', createFood);
 router.put('/food/:id', updateFood);
-router.delete('/food/:id', deleteFood);
+router.delete('/food/:id', resolveToken, deleteFood);
 
 // RESTful Route Handlers
 async function getFood(req, res) {
@@ -41,6 +41,10 @@ async function updateFood(req, res) {
 }
 
 async function deleteFood(req, res) {
+  const userToken = req.userToken;
+  if (userToken.role != 'Admin') {
+    res.status(403).send('You must be an administrator to delete this.');
+  }
   let id = req.params.id;
   let deletedFood = await FoodCollection.delete(id);
   res.status(200).json(deletedFood);

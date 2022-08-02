@@ -3,6 +3,7 @@
 const express = require('express');
 
 const ClothesCollection = require('../models/index.js').Clothes;
+const resolveToken = require('../middleware/resolveToken');
 
 const router = express.Router();
 
@@ -11,7 +12,7 @@ router.get('/clothes', getClothes);
 router.get('/clothes/:id', getOneClothes);
 router.post('/clothes', createClothes);
 router.put('/clothes/:id', updateClothes);
-router.delete('/clothes/:id', deleteClothes);
+router.delete('/clothes/:id', resolveToken, deleteClothes);
 
 // RESTful Route Handlers
 async function getClothes(req, res) {
@@ -39,6 +40,10 @@ async function updateClothes(req, res) {
 }
 
 async function deleteClothes(req, res) {
+  const userToken = req.userToken;
+  if (userToken.role != 'Admin') {
+    res.status(403).send('You must be an administrator to delete this.');
+  }
   let id = req.params.id;
   let deletedClothes = await ClothesCollection.delete(id);
   res.status(200).json(deletedClothes);
