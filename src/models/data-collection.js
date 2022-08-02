@@ -15,7 +15,8 @@ class Collection {
       let record = await this.model.create(obj);
 
       if (options) {
-        if (options.association) this.createAssociate(record, options.association);
+        if (options.association)
+          this.createAssociate(record, options.association);
       }
       return record;
     } catch (e) {
@@ -24,8 +25,7 @@ class Collection {
   }
 
   async read(id) {
-
-    let options = { include: [...this.associations.keys()] }
+    let options = { include: [...this.associations.keys()] };
     let records = null;
 
     try {
@@ -44,13 +44,11 @@ class Collection {
 
   async update(id, obj) {
     try {
-
       if (!id) throw new Error('No record id provided');
 
       let record = await this.model.findOne({ where: { id } });
       let updatedRecord = await record.update(obj);
       return updatedRecord;
-
     } catch (e) {
       return e;
     }
@@ -58,12 +56,10 @@ class Collection {
 
   async delete(id) {
     try {
-
       if (!id) throw new Error('No record ID provided');
 
       let deletedRecord = await this.model.destroy({ where: { id } });
       return deletedRecord;
-
     } catch (e) {
       return e;
     }
@@ -81,7 +77,6 @@ class Collection {
    *  */
   async createAssociate(record, association) {
     try {
-
       // check if the association collection model is contained within the associations Map.
       if (!this.associations.has(association.collection.model)) {
         throw new Error('No association found for specified collection');
@@ -92,7 +87,6 @@ class Collection {
         [`${association.collection.model.name}Id`]: association.id,
       });
       return associatedModelRecord;
-
     } catch (e) {
       return e;
     }

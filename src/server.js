@@ -3,13 +3,21 @@
 // 3rd Party Dependencies (modules)
 const express = require('express');
 
-// Our own custom modules
+// error handlers
+
 const notFoundHandler = require('./error-handlers/404.js');
 const errorHandler = require('./error-handlers/500.js');
+
+// middleware
+
 const logger = require('./middleware/logger.js');
+
+// routes
 
 const foodRoutes = require('./routes/food.js');
 const clothesRoutes = require('./routes/clothes.js');
+const signUpRoute = require('./routes/signup');
+const signInRoute = require('./routes/signin');
 
 const app = express();
 
@@ -22,6 +30,10 @@ app.use(logger);
 // Use our routes from the routing module...
 app.use(foodRoutes);
 app.use(clothesRoutes);
+
+// user related routes
+app.use(signUpRoute);
+app.use(signInRoute);
 
 // Our Error Handlers -- need to be the last things defined!
 // These use the external modules we required above
