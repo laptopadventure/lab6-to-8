@@ -34,7 +34,7 @@ describe('users', () => {
     it('can create a user', async () => {
       const response = await request.post('/signup').send(frank);
       expect(response.status).toBe(200);
-      expect(response.text).toBe('New account created, Frank!');
+      expect(response.text).toBe('New User created, Frank!');
     });
     it('can sign into a user', async () => {
       //create frank
@@ -44,7 +44,7 @@ describe('users', () => {
       const response = await request.put('/signin').send(frank);
       console.log(response.text);
       expect(response.status).toBe(200);
-      expect(response.body.username).toBe('Frank');
+      expect(response.body.user).toBe('Frank');
     });
   });
 });

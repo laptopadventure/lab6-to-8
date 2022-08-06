@@ -20,17 +20,19 @@ const clothesSchema = require('./clothes/model.js');
 const recipeSchema = require('./recipe/model.js');
 const foodRecipeSchema = require('./foodRecipe/model.js');
 
+const productionOptions = {
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false,
+    },
+  },
+};
+
+const devOptions = { logging: false };
+
 const sequelizeOptions =
-  process.env.NODE_ENV === 'production'
-    ? {
-        dialectOptions: {
-          ssl: {
-            require: true,
-            rejectUnauthorized: false,
-          },
-        },
-      }
-    : { logging: false };
+  process.env.NODE_ENV === 'production' ? productionOptions : devOptions;
 
 // turn schemas into Sequelize models
 const sequelize = new Sequelize(DATABASE_URL, sequelizeOptions);
