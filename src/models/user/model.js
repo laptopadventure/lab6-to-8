@@ -14,7 +14,10 @@ const user = (sequelize, DataTypes) =>
       type: DataTypes.STRING,
       allowNull: false,
     },
-    role: { type: DataTypes.STRING },
+    role: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
     token: {
       type: DataTypes.VIRTUAL,
       get() {

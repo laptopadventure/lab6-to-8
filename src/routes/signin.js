@@ -11,11 +11,16 @@ router.put('/signin', signIn);
 
 async function signIn(req, res) {
   const { username, password } = req.body;
-  const user = User.findOne({ where: { username: username } });
+  if (!username || !password) {
+    res.status(403).send('Send a username and password to sign in.');
+    return;
+  }
+  const user = await User.findOne({ where: { username: username } });
   if (!user) {
     res.status(404).send('No user with that name.');
   }
-  const validLogin = bcrypt.compare(password, user.password);
+  console.log(user);
+  const validLogin = await bcrypt.compare(password, user.password);
   if (!validLogin) {
     res.status(403).send('Incorrect password.');
   }

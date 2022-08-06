@@ -44,6 +44,7 @@ async function deleteFood(req, res) {
   const userToken = req.userToken;
   if (userToken.role != 'Admin') {
     res.status(403).send('You must be an administrator to delete this.');
+    return;
   }
   let id = req.params.id;
   let deletedFood = await FoodCollection.delete(id);
