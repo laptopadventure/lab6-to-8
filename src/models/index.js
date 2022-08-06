@@ -1,9 +1,16 @@
 'use strict';
 
 require('dotenv').config();
-const DATABASE_URL = ['dev', 'test'].includes(process.env.NODE_ENV)
-  ? 'sqlite::memory:'
-  : process.env.DATABASE_URL;
+
+let DATABASE_URL;
+if (['dev', 'test'].includes(process.env.NODE_ENV)) {
+  DATABASE_URL = 'sqlite::memory:';
+} else {
+  DATABASE_URL = process.env.DATABASE_URL || 'sqlite::memory:';
+}
+
+console.log('starting on ', DATABASE_URL);
+
 const { Sequelize, DataTypes } = require('sequelize');
 
 const Collection = require('./data-collection.js');
@@ -13,17 +20,19 @@ const clothesSchema = require('./clothes/model.js');
 const recipeSchema = require('./recipe/model.js');
 const foodRecipeSchema = require('./foodRecipe/model.js');
 
+const productionOptions = {
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false,
+    },
+  },
+};
+
+const devOptions = { logging: false };
+
 const sequelizeOptions =
-  process.env.NODE_ENV === 'production'
-    ? {
-        dialectOptions: {
-          ssl: {
-            require: true,
-            rejectUnauthorized: false,
-          },
-        },
-      }
-    : { logging: false };
+  process.env.NODE_ENV === 'production' ? productionOptions : devOptions;
 
 // turn schemas into Sequelize models
 const sequelize = new Sequelize(DATABASE_URL, sequelizeOptions);

@@ -3,7 +3,7 @@
 const { server } = require('../src/server.js');
 const { db } = require('../src/models/index.js');
 const supertest = require('supertest');
-const mockRequest = supertest(server);
+const request = supertest(server);
 
 beforeAll(async () => {
   await db.sync();
@@ -14,14 +14,14 @@ afterAll(async () => {
 
 describe('web server', () => {
   it('should respond with a 404 on an invalid route', () => {
-    return mockRequest.get('/foobar').then((results) => {
+    return request.get('/foobar').then((results) => {
       expect(results.status).toBe(404);
     });
   });
 
   // These tests are wired with async/await --- so much cleaner!
   it('should respond with a 404 on an invalid method', async () => {
-    const response = await mockRequest.put('/food');
+    const response = await request.put('/food');
     expect(response.status).toBe(404);
   });
 
@@ -32,7 +32,7 @@ describe('web server', () => {
       type: 'vegetable',
     };
 
-    const response = await mockRequest.post('/food').send(data);
+    const response = await request.post('/food').send(data);
     expect(response.status).toBe(200);
 
     //Did we get an ID?
@@ -45,14 +45,14 @@ describe('web server', () => {
   });
 
   it('can get list of records', async () => {
-    const response = await mockRequest.get('/food');
+    const response = await request.get('/food');
     expect(response.status).toBe(200);
     expect(Array.isArray(response.body)).toBeTruthy();
     expect(response.body.length).toEqual(1);
   });
 
   it('can get a record', async () => {
-    const response = await mockRequest.get('/food/1');
+    const response = await request.get('/food/1');
     expect(response.status).toBe(200);
     expect(typeof response.body).toEqual('object');
     expect(response.body.id).toEqual(1);
@@ -60,7 +60,7 @@ describe('web server', () => {
 
   it('can update a record', async () => {
     const data = { name: 'Broccoli' };
-    const response = await mockRequest.put('/food/1').send(data);
+    const response = await request.put('/food/1').send(data);
     expect(response.status).toBe(200);
     expect(typeof response.body).toEqual('object');
     expect(response.body.id).toEqual(1);
@@ -68,10 +68,21 @@ describe('web server', () => {
   });
 
   it('can delete a record', async () => {
-    const response = await mockRequest.delete('/food/1');
+    // needs an admin account
+    const adminAccountObj = {
+      username: process.env.ADMINUSER,
+      password: process.env.ADMINPASS,
+    };
+    await request.post('/signup').send(adminAccountObj);
+    const adminAccount = await request.put('/signin').send(adminAccountObj);
+
+    const response = await request
+      .delete('/food/1')
+      .set('Authorization', `bearer ${adminAccount.body.token}`);
+    console.log(response.text);
     expect(response.status).toBe(200);
 
-    const getResponse = await mockRequest.get('/food');
+    const getResponse = await request.get('/food');
     expect(getResponse.body.length).toEqual(0);
   });
 });
